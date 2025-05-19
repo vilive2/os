@@ -1,0 +1,100 @@
+The cat builds a script.
+My friend jumps over a book.
+An engineer writes an app.
+The teacher creates an app.
+The dog creates the homework.
+The teacher solves the code.
+The cat tests an app.
+The teacher solves the project.
+A student tests an app.
+The dog builds an app.
+A student eats the code.
+A student reads a puzzle.
+A student tests the homework.
+My friend eats an app.
+A programmer eats an app.
+A programmer writes a puzzle.
+A student tests the code.
+My friend tests an app.
+The cat builds a script.
+The teacher writes the wall.
+An engineer tests a book.
+An engineer writes a book.
+The dog creates a script.
+An engineer writes the project.
+The dog tests a book.
+The cat tests the homework.
+An engineer tests the code.
+A student writes the code.
+The dog builds the project.
+The dog jumps over a script.
+The teacher creates the wall.
+The teacher solves the project.
+The dog eats a book.
+My friend eats a script.
+The cat tests an app.
+A programmer tests the code.
+The dog reads a book.
+An engineer eats the project.
+The dog writes a script.
+A student creates the code.
+The teacher jumps over the wall.
+The dog builds the wall.
+The dog eats the homework.
+The dog writes a book.
+A student tests the wall.
+The cat solves the wall.
+The dog creates the code.
+A student builds a puzzle.
+A programmer builds an app.
+The teacher writes the project.
+A programmer builds a book.
+A programmer jumps over the wall.
+The teacher builds the code.
+My friend writes a puzzle.
+An engineer creates the homework.
+The dog solves a script.
+An engineer reads the wall.
+An engineer tests the wall.
+The teacher eats a book.
+A student tests the homework.
+A student builds a puzzle.
+The cat reads a book.
+The dog creates an app.
+The dog eats the project.
+The dog jumps over an app.
+The cat eats the homework.
+My friend jumps over the code.
+The dog tests the project.
+A student builds the wall.
+The teacher solves the code.
+An engineer writes the project.
+The cat jumps over the wall.
+The cat writes the project.
+The teacher jumps over a puzzle.
+An engineer solves the project.
+A student tests the homework.
+A student writes a book.
+The cat jumps over a script.
+A student jumps over the homework.
+A student reads the homework.
+The cat writes a puzzle.
+The teacher writes a script.
+A student solves a book.
+An engineer eats a puzzle.
+My friend jumps over the project.
+The cat eats the homework.
+A programmer tests a book.
+The teacher solves a puzzle.
+The dog writes the project.
+The dog creates a puzzle.
+The dog builds a book.
+The dog builds a book.
+An engineer solves the code.
+The teacher solves a book.
+My friend builds a script.
+The dog reads an app.
+A student writes a puzzle.
+My friend tests a puzzle.
+The teacher creates a book.
+My friend reads a puzzle.

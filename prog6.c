@@ -15,7 +15,7 @@ int main() {
 
     for(int i = 0 ; i < n ; i++) {
         pid_t pid = wait(&status);
-        printf("Zombie Process %d cleaned up.\n", pid);
+        printf("Zombie Process %d cleaned up status = %d.\n", pid, status);
     }
 
     return 0;

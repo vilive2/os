@@ -39,6 +39,13 @@
 #define dprintf(format, ...)
 #endif
 
+#define TIMESTAMP(x) {                                                  \
+  struct timespec _tp_;                                                 \
+  if (0 > clock_gettime(CLOCK_REALTIME, &_tp_))                         \
+      ERR_MESG("clock_gettime failed");                                 \
+  fprintf(stderr, "%s %llu\n", x, (_tp_.tv_sec * 1000000000 + _tp_.tv_nsec) % 100000000); \
+}
+
 #define Malloc(n,type) (type *) malloc( (unsigned) ((n)*sizeof(type)))
 #define Realloc(loc,n,type) (type *) realloc( (char *)(loc), \
                                               (unsigned) ((n)*sizeof(type)))
