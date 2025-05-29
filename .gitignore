@@ -1,2 +1,6 @@
 *.out
+*.o
+build
 bin
+findutils
+tmp
