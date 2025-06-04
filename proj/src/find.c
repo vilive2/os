@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <err.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <dirent.h>
@@ -11,6 +10,7 @@
 #include "mytypes.h"
 
 extern int match(char *name, char *expr, char *opts);
+extern void print(char *dir, char *d_name, char d_type);
 
 int find(char *dir, char *target) {
     int fd;
@@ -19,16 +19,20 @@ int find(char *dir, char *target) {
     long nread;
     struct linux_dirent *d;
 
-    int found = 0;
+    int found = 1;
 
     fd = open(dir, O_RDONLY | O_DIRECTORY);
-    if (fd == -1)
-        err(EXIT_FAILURE, "open");
+    if (fd == -1) {
+        fprintf(stderr, "failed to open %s\n",dir);
+        exit(1);
+    }
 
     for (;;) {
         nread = syscall(SYS_getdents, fd, buf, BUF_SIZE);
-        if (nread == -1)
-            err(EXIT_FAILURE, "read");
+        if (nread == -1) {
+            fprintf(stderr, "read directory entry failed : %s\n", dir);
+            exit(EXIT_FAILURE);
+        }
 
         if (nread == 0)
             break;
@@ -41,21 +45,15 @@ int find(char *dir, char *target) {
             d_type = *(buf + bpos + d->d_reclen - 1);
 
             if (match(d->d_name, target, NULL)) {
-                found = 1;
-                printf("%s/%s\t%s\n", dir, d->d_name, (d_type == DT_REG) ? "regular" :
-                                                          (d_type == DT_DIR) ? "directory" :
-                                                          (d_type == DT_FIFO) ? "FIFO" :
-                                                          (d_type == DT_SOCK) ? "socket" :
-                                                          (d_type == DT_LNK) ? "symlink" :
-                                                          (d_type == DT_BLK) ? "block dev" :
-                                                          (d_type == DT_CHR) ? "char dev" : "???");
+                found = 0;
+                print(dir, d->d_name, d_type);
             }
 
 
             if (d_type == DT_DIR) {
                 char nextDir[BUF_SIZE];
                 sprintf(nextDir, "%s/%s", dir, d->d_name);
-                found = found | find(nextDir, target);
+                found = find(nextDir, target) && found;
             }
         }
     }
