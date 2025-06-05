@@ -1,3 +1,4 @@
+#define _GNU_SOURCE 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -9,10 +10,20 @@
 #include <string.h>
 #include "mytypes.h"
 
-extern int match(char *name, char *expr, char *opts);
-extern void print(char *dir, char *d_name, char d_type);
+extern int match(const char *name, const char *expr, unsigned int opts);
+extern void print(const char *dir, const char *d_name, char d_type);
+extern const char *pattern;
+extern unsigned int options;
+extern char cwd[MAX_PATH_LEN];
 
-int find(char *dir, char *target) {
+int find(const char *dir) {
+    int cwd_len = strlen(cwd);
+    if (cwd_len == 0) {
+        snprintf(cwd, MAX_PATH_LEN, "%s", dir);
+    } else {
+        snprintf(cwd+cwd_len, MAX_PATH_LEN-cwd_len, "/%s", dir);
+    }
+
     int fd;
     char d_type;
     char buf[BUF_SIZE];
@@ -21,17 +32,18 @@ int find(char *dir, char *target) {
 
     int found = 1;
 
-    fd = open(dir, O_RDONLY | O_DIRECTORY);
+    fd = open(cwd, O_RDONLY | O_DIRECTORY);
     if (fd == -1) {
-        fprintf(stderr, "failed to open %s\n",dir);
-        exit(1);
+        fprintf(stderr, "%s Permission denied.\n", cwd);
+        cwd[cwd_len] = '\0';
+        return 1;
     }
+
 
     for (;;) {
         nread = syscall(SYS_getdents, fd, buf, BUF_SIZE);
         if (nread == -1) {
-            fprintf(stderr, "read directory entry failed : %s\n", dir);
-            exit(EXIT_FAILURE);
+            break;
         }
 
         if (nread == 0)
@@ -44,21 +56,28 @@ int find(char *dir, char *target) {
                 continue;
             d_type = *(buf + bpos + d->d_reclen - 1);
 
-            if (match(d->d_name, target, NULL)) {
+            unsigned int sat = 0;
+
+            sat |= options & (1<<4);
+            sat |= (match(d->d_name, pattern, options) << 0);
+            if (options & (1<<1)) {
+                sat |= (1<<1);
+                if (d_type == DT_REG) sat |= (1<<2);
+                else if (d_type == DT_DIR) sat |= (1<<3);
+            }
+            if (sat == options) {
                 found = 0;
-                print(dir, d->d_name, d_type);
+                print(cwd, d->d_name, d_type);
             }
 
-
             if (d_type == DT_DIR) {
-                char nextDir[BUF_SIZE];
-                sprintf(nextDir, "%s/%s", dir, d->d_name);
-                found = find(nextDir, target) && found;
+                found = find(d->d_name) && found;
             }
         }
     }
 
     close(fd);
+    cwd[cwd_len] = '\0';
 
     return found;
 }

@@ -13,11 +13,21 @@ void To_Lowercase(char *string){
     
 }
 
-int match(char *name, char *expr, char *opts){
-    To_Lowercase(name);
-    To_Lowercase(expr);
-    //if it necessary to convert "opts" in lowercase, same thing do .
-    if (*expr == '\0' )
+int match(const char *name, const char *pattern, unsigned int opts){
+    if (opts & (1 << 4)) {
+        // Ignore case
+        char new_name[32];
+        char new_pattern[32];
+        strncpy(new_name, name, 31);
+        new_name[31] = '\0';
+        strncpy(new_pattern, pattern, 31);
+        new_pattern[31] = '\0';
+        To_Lowercase(new_name);
+        To_Lowercase(new_pattern);
+        return match(new_name, new_pattern, opts-(1<<4));
+    }
+    
+    if (*pattern == '\0' )
     {
         if (*name == '\0')
         {
@@ -26,23 +36,21 @@ int match(char *name, char *expr, char *opts){
         {
             return 0;
         }
-        
-        
     }
     
-    if (*expr == '*')
+    if (*pattern == '*')
     {
-        while (*expr == '*')
+        while (*pattern == '*')
         {
-            expr++;
+            pattern++;
         }
-        if (*expr == '\0')
+        if (*pattern == '\0')
         {
             return 1;
         }
         while (*name)
         {
-            if (match(name, expr, opts))
+            if (match(name, pattern, opts))
             {
                 return 1;
             }
@@ -52,21 +60,20 @@ int match(char *name, char *expr, char *opts){
             
     }
 
-    if (*expr == '?')
+    if (*pattern == '?')
     {
         if (*name == '\0')
         {
             return 0;
         }
-        return match(name+1, expr+1,opts);
+        return match(name+1, pattern+1,opts);
     }
     
     
-    if (*expr == *name)
+    if (*pattern == *name)
     {
-        return match(name+1,expr+1,opts);
+        return match(name+1,pattern+1,opts);
     }
-    
     
     return 0;
 

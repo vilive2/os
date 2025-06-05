@@ -2,6 +2,7 @@
 #define MYTYPES 1
 
 #define BUF_SIZE 1024
+#define MAX_PATH_LEN 100000
 
 struct linux_dirent {
     unsigned long d_ino;
