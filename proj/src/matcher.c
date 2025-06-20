@@ -69,6 +69,33 @@ int match(const char *name, const char *pattern, unsigned int opts){
         return match(name+1, pattern+1,opts);
     }
     
+    if (*pattern == '[')
+    {
+        pattern++;
+        int match_found = 0;
+
+        while (*pattern != ']' && *pattern != '\0')
+        {
+            if (*pattern == *name)
+            {
+                match_found =1;
+            }
+            pattern++;
+        }
+        if (*pattern != ']')
+        {
+            return 0;
+        }
+        
+        if (match_found == 1)
+        {
+            return match(name +1, pattern +1,opts);
+        }
+        return 0;
+        
+    }
+    
+    
     
     if (*pattern == *name)
     {
