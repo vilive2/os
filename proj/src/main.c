@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "mytypes.h"
+#include "defs.h"
 
 extern int find(const char *dir);
 extern void help(int status);
