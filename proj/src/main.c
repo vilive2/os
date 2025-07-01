@@ -1,35 +1,30 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <fcntl.h>
 #include "defs.h"
 
-extern int find(const char *dir);
-extern void help(int status);
-extern void parse(int, char **);
-
-char cwd[MAX_PATH_LEN];
 const char *program_name = NULL;
-const char *start_dir = NULL;
-const char *pattern = NULL;
-unsigned int options; 
-/*
-1<<0 : pattern match
-1<<1 : type
-1<<2 : file type
-1<<3 : dir type
-1<<4 : ignore case
-*/
+struct options options;
+struct state state;
 
 int main(int argc, char *argv[]) {
-    assert(argc > 0);
+	int end_of_leading_options = 0;
 
-    parse(argc, argv);
-    cwd[0]='\0';
-    
-    if (find(start_dir)) {
-        fprintf(stderr, "'%s': No such file or directory\n", pattern);
-        exit(EXIT_FAILURE);
-    }
+	if (argv[0])
+		program_name = argv[0];
+	else
+		program_name = "myfind";
 
-    exit(EXIT_SUCCESS);
+	state.exit_status = EXIT_SUCCESS;
+
+	set_option_defaults(&options);
+
+	end_of_leading_options = process_leading_options(argc, argv);
+
+	build_expression_tree(argc, argv, end_of_leading_options);
+
+	process_all_startpoints(argc - end_of_leading_options,
+				argv + end_of_leading_options);
+
+	cleanup();
+
+	return state.exit_status;
 }
