@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
 		program_name = "myfind";
 
 	state.exit_status = EXIT_SUCCESS;
+	state.cwd_dir_fd = AT_FDCWD;
 
 	set_option_defaults(&options);
 

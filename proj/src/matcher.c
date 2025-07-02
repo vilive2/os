@@ -15,13 +15,15 @@ int match(const char *name, const char *pattern, int flags) {
 	if (flags & IGNORE_CASE) {
 		char *new_name = (char *)malloc(strlen(name) + 1);
 		if (new_name == NULL) {
-			// memory error
+			cleanup();
+			error(EXIT_FAILURE, 0, "malloc failed");
 			return 0;
 		}
 		char *new_pattern = (char *)malloc(strlen(pattern) + 1);
 		if (new_pattern == NULL) {
 			free(new_name);
-			// memory error
+			cleanup();
+			error(EXIT_FAILURE, 0, "malloc failed");
 			return 0;
 		}
 		strcpy(new_name, name);

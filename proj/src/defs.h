@@ -5,9 +5,12 @@
 # include <stdio.h> 
 # include <string.h>
 # include <stdlib.h>
+# include <stdint.h>
 # include <unistd.h>
 # include <errno.h>
 # include <error.h>
+
+#define MODE_ALL (S_ISUID | S_ISGID | S_ISVTX | MODE_RWX)
 
 #define IGNORE_CASE 16
 #define true 1
@@ -30,12 +33,6 @@ enum comparison_type {
     COMP_EQ
 };
 
-enum permissions_type {
-    PERM_AT_LEAST,
-    PERM_ANY,
-    PERM_EXACT
-};
-
 enum predicate_type {
     NO_TYPE,
     PRIMARY_TYPE,
@@ -54,15 +51,15 @@ enum predicate_precedence {
     MAX_PREC
 };
 
-struct perm_val {
-    enum permissions_type kind;
-    mode_t val[2];
+struct long_val {
+    enum comparison_type kind;
+    uintmax_t l_val;
 };
 
 struct size_val {
     enum comparison_type kind;
     int blocksize;
-    int size;
+    uintmax_t size;
 };
 
 enum file_type {
@@ -87,10 +84,12 @@ struct predicate {
 
     bool need_stat;
     bool need_type;
-    bool need_inum;
-
+    
     union {
         const char *str;
+        struct long_val numinfo;
+        struct size_val size;
+        uid_t uid;
         bool types[FTYPE_COUNT];
     } args;
 
@@ -143,8 +142,10 @@ PREDICATEFUNCTION pred_and;
 PREDICATEFUNCTION pred_closeparen;
 PREDICATEFUNCTION pred_comma;
 PREDICATEFUNCTION pred_empty;
+PREDICATEFUNCTION pred_executable;
 PREDICATEFUNCTION pred_group;
 PREDICATEFUNCTION pred_iname;
+PREDICATEFUNCTION pred_links;
 PREDICATEFUNCTION pred_name;
 PREDICATEFUNCTION pred_negate;
 PREDICATEFUNCTION pred_openparen;

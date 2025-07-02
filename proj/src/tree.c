@@ -46,11 +46,20 @@ static struct predicate *get_expr(struct predicate **input, short int prev_prec,
 
 			prev_pred = *input;
 			*input = (*input)->pred_next;
-			if ((*input)->p_type == CLOSE_PAREN)
-				exit(EXIT_FAILURE);
+			if ((*input)->p_type == CLOSE_PAREN) {
+				cleanup();
+				error(EXIT_FAILURE, 0,
+				      "invalid expression; empty parentheses "
+				      "are not allowed.");
+			}
 			next = get_expr(input, NO_PREC, prev_pred);
-			if (*input == NULL || (*input)->p_type != CLOSE_PAREN)
-				exit(EXIT_FAILURE);
+			if (*input == NULL || (*input)->p_type != CLOSE_PAREN) {
+				cleanup();
+				error(EXIT_FAILURE, 0,
+				      "invalid expression; I was expecting to "
+				      "find a ')' somewhere but did not see "
+				      "one.");
+			}
 			*input = (*input)->pred_next;
 			break;
 		default:
@@ -238,7 +247,6 @@ struct predicate *get_new_pred_chk_op(const struct parser_table *entry,
 				new_pred->p_prec = AND_PREC;
 				new_pred->need_stat = false;
 				new_pred->need_type = false;
-				new_pred->need_inum = false;
 				new_pred->args.str = NULL;
 				break;
 			default:

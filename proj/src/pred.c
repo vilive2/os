@@ -60,6 +60,10 @@ bool PREDFUNC(empty) {
 	}
 }
 
+bool PREDFUNC(executable) {
+	return 0 == faccessat(state.cwd_dir_fd, state.rel_pathname, X_OK, 0);
+}
+
 static bool pred_name_common(const char *pathname, const char *str, int flags) {
 	const char *filename = pathname;
 	const char *ptr = pathname;
@@ -74,6 +78,30 @@ static bool pred_name_common(const char *pathname, const char *str, int flags) {
 
 bool PREDFUNC(iname) {
 	return pred_name_common(pathname, pred_ptr->args.str, IGNORE_CASE);
+}
+
+static bool compare_num(enum comparison_type kind, uintmax_t l_val,
+			uintmax_t val) {
+	switch (kind) {
+		case COMP_GT:
+			if (val > l_val)
+				return true;
+			break;
+		case COMP_LT:
+			if (val < l_val)
+				return true;
+			break;
+		case COMP_EQ:
+			if (val == l_val)
+				return true;
+			break;
+	}
+	return false;
+}
+
+bool PREDFUNC(links) {
+	return compare_num(pred_ptr->args.numinfo.kind,
+			   pred_ptr->args.numinfo.l_val, stat_buf->st_nlink);
 }
 
 bool PREDFUNC(name) {
@@ -123,6 +151,15 @@ bool PREDFUNC(print) {
 	return true;
 }
 
+bool PREDFUNC(size) {
+	uintmax_t f_val;
+	f_val = (stat_buf->st_size / pred_ptr->args.size.blocksize) +
+		(stat_buf->st_size % pred_ptr->args.size.blocksize != 0);
+
+	return compare_num(pred_ptr->args.size.kind, pred_ptr->args.size.size,
+			   f_val);
+}
+
 bool PREDFUNC(type) {
 	mode_t mode;
 	enum file_type type = FTYPE_COUNT;
@@ -148,6 +185,13 @@ bool PREDFUNC(type) {
 		type = FTYPE_FIFO;
 
 	if ((type != FTYPE_COUNT) && pred_ptr->args.types[type])
+		return true;
+	else
+		return false;
+}
+
+bool PREDFUNC(user) {
+	if (pred_ptr->args.uid == stat_buf->st_uid)
 		return true;
 	else
 		return false;
