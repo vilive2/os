@@ -70,18 +70,39 @@ int match(const char *name, const char *pattern, int flags) {
 	if (*pattern == '[') {
 		pattern++;
 		int match_found = 0;
+		int negate = 0;
+
+		if (*pattern == '^') {
+			negate = 1;
+			pattern++;
+		}
 
 		while (*pattern != ']' && *pattern != '\0') {
-			if (*pattern == *name) {
-				match_found = 1;
+			// if (*pattern == *name)
+			// {
+			//     match_found =1;
+			// }
+			// pattern++;
+			if (*(pattern + 1) == '-' && *(pattern + 2) != '\0' &&
+			    *(pattern + 2) != ']') {
+				char start = *pattern;
+				char end = *(pattern + 2);
+				if (*name >= start && *name <= end) {
+					match_found = 1;
+				}
+				pattern = pattern + 3;
+			} else {
+				if (*pattern == *name) {
+					match_found = 1;
+				}
+				pattern++;
 			}
-			pattern++;
 		}
 		if (*pattern != ']') {
 			return 0;
 		}
 
-		if (match_found == 1) {
+		if ((match_found && !negate) || (!match_found && negate)) {
 			return match(name + 1, pattern + 1, flags);
 		}
 		return 0;
